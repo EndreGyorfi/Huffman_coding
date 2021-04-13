@@ -1,0 +1,23 @@
+# depslib dependency file v1.0
+1582923805 source:c:\users\endre\desktop\adatszerkezetek_ii\labor2\main.cpp
+	<iostream>
+	<fstream>
+	<algorithm>
+	<bits/stdc++.h>
+
+1583506612 source:c:\users\endre\desktop\adatszerkezetek_ii\labor2_huffman\main.cpp
+	<iostream>
+	<fstream>
+	<algorithm>
+	<bits/stdc++.h>
+	<stdlib.h>
+	<strstream>
+
+1583503012 source:c:\users\endre\desktop\egyszer_volt\adatszerkezetek_ii\labor2_huffman\main.cpp
+	<iostream>
+	<fstream>
+	<algorithm>
+	<bits/stdc++.h>
+	<stdlib.h>
+	<strstream>
+

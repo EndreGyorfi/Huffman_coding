@@ -1,0 +1,186 @@
+#include <iostream>
+#include<fstream>
+#include<algorithm>
+#include <bits/stdc++.h>
+using namespace std;
+struct karakter{
+    char karakter;
+    int gyak;
+    int apa;
+    int sorsz;
+};
+
+struct rendezes{
+    bool operator()(const karakter &a,const karakter &b){
+        if(a.gyak==0 || b.gyak==0){
+            return a.sorsz<b.sorsz;
+        }
+        else{
+            if(a.gyak==b.gyak){
+                return a.sorsz<b.sorsz;
+            }
+            else{
+               return a.gyak<b.gyak;
+            }
+        }
+    }
+};
+
+struct charelem{
+    char kar;
+    string elem;
+};
+
+struct rendezsorszam{
+    bool operator()(karakter a, karakter b){
+        return a.sorsz<b.sorsz;
+    }
+};
+
+string bejar(karakter *huffman,int sorsz,int meret,string sor){
+    if(abs(huffman[sorsz].apa)!=meret){
+        if(huffman[sorsz].apa<0){
+            sor+="0";
+        }
+        else{
+            sor+="1";
+        }
+        ///cout<<"Ezen a sorszamon:   "<<sorsz<<endl;
+        ///cout<<"Ez a szam van    "<<huffman[sorsz].apa<<endl;
+        ///cout<<endl;
+        if(abs(huffman[sorsz].apa)<sorsz){
+            cout<<"ERROR"<<endl;
+        }
+        else
+            return bejar(huffman,abs(huffman[sorsz].apa),meret,sor);
+    }
+    else{
+        if(huffman[sorsz].apa<0){
+            sor+="0";
+            return sor;
+        }
+        else{
+            sor+="1";
+            return sor;
+        }
+    }
+}
+
+int main()
+{
+    ifstream fin("bible.txt");
+    string line,ossz;
+    while(getline (fin, ossz)){
+        line+=ossz;
+    }
+
+    cout<<line;
+    cout<<endl;
+    int a[256]={0};
+    for(int i=0;i<line.length();++i){
+        a[line[i]]++;
+    }
+
+    int szam=0;
+    int kul_elem=0;
+    for(int i=0;i<256;++i){
+        if(a[i]!=0){
+            ++kul_elem;
+        }
+    }
+
+    cout<<"Kul elemek:"<<kul_elem<<endl;
+    karakter huffman[2*(kul_elem-1)];
+    for(int i=0;i<2*(kul_elem-1);++i){
+        char k,ures;
+        int gy;
+        for(int j=szam;j<256;++j){
+            if(a[j]!=0){
+               gy=a[j];
+               szam=j+1;
+               k=j;
+               break;
+            }
+        }
+        huffman[i].gyak=gy;
+        gy=0;
+        huffman[i].karakter=k;
+        k='\0';
+        huffman[i].apa=0;
+        huffman[i].sorsz=i;
+    }
+
+    /**for(int i=0;i<2*(kul_elem-1);++i){
+        cout<<huffman[i].sorsz<<"   "<<huffman[i].karakter<<"   "<<huffman[i].gyak<<"   "<<huffman[i].apa<<endl;
+    }*/
+    sort(huffman,huffman+(sizeof(huffman)/sizeof(*huffman)),rendezes());
+    ///cout<<"meret:"<<(sizeof(huffman)/sizeof(*huffman))<<endl;
+    cout<<endl<<endl;
+    for(int i=0;i<2*(kul_elem-1);++i){
+        cout<<huffman[i].sorsz<<"   "<<huffman[i].karakter<<"   "<<huffman[i].gyak<<"   "<<huffman[i].apa<<endl;
+    }
+    int apasorszam=kul_elem;
+    for(int i=0;i<2*(kul_elem-1);i=i+2){
+        int a;
+        a=huffman[i].gyak+huffman[i+1].gyak;
+        huffman[apasorszam].gyak=a;///ide ketto kellene beirodjon de nem irodik be ,itt a hiba
+        huffman[i].apa=-apasorszam;
+        huffman[i+1].apa=apasorszam;
+        sort(huffman,huffman+(sizeof(huffman)/sizeof(*huffman)),rendezes());
+        apasorszam++;
+    }
+
+        cout<<endl<<endl;
+    for(int i=0;i<2*(kul_elem-1);++i){
+        cout<<huffman[i].sorsz<<"   "<<huffman[i].karakter<<"   "<<huffman[i].gyak<<"   "<<huffman[i].apa<<endl;
+    }
+
+    sort(huffman,huffman+(sizeof(huffman)/sizeof(*huffman)),rendezsorszam());
+    /*cout<<endl;
+    for(int i=0;i<2*(kul_elem-1);++i){
+        cout<<huffman[i].sorsz<<"   "<<huffman[i].karakter<<"   "<<huffman[i].gyak<<"   "<<huffman[i].apa<<endl;
+    }*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    int teljeshossz=(sizeof(huffman)/sizeof(*huffman));
+    /**char** chtomb=new char*[kul_elem];
+    for(int i=0;i<kul_elem;++i){
+        string hossz=bejar(huffman,i,(sizeof(huffman)/sizeof(*huffman)),"");
+        chtomb[i]=new char[hossz.length()];
+    }
+    cout<<endl;*/
+
+    charelem celem[kul_elem];
+    string ss=bejar(huffman,0,(sizeof(huffman)/sizeof(*huffman)),"");
+    for(int i=0;i<kul_elem;++i){
+        for(int j=0;j<(bejar(huffman,i,(sizeof(huffman)/sizeof(*huffman)),"").length());++j){
+            celem[i].kar=huffman[i].karakter;
+            string str=(bejar(huffman,i,teljeshossz,""));
+            celem[i].elem=str;
+            ///chtomb[i][j]=str[j];
+        }
+    }
+    for(int i=0;i<kul_elem;++i){
+        cout<<celem[i].kar<<" - "<<celem[i].elem<<endl;
+    }
+
+
+    /*for(int i=0;i<kul_elem;++i){
+        for(int j=0;j<(bejar(huffman,i,(sizeof(huffman)/sizeof(*huffman)),"").length());++j){
+            cout<<chtomb[i][j]<<"  ";
+        }
+        cout<<endl;
+    }*/
+    for(int i=0;i<line.length();++i){
+        for(int j=0;j<kul_elem;++j){
+            if(celem[j].kar==line[i]){
+                cout<<celem[j].elem<<"  ";
+            }
+        }
+    }
+
+    FILE *fp;
+    fp=fopen("ki.txt","w");
+    fprintf(fp,"Ez egy szoveges file");
+
+}
